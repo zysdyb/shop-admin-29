@@ -7,7 +7,7 @@
       </div>
       <div class="logout">
         <span>来了老弟</span>
-        <a href="javascript:;" @click="logoout">退出</a>
+        <a href="javascript:;" @click="logout">退出</a>
       </div>
     </el-header>
     <el-container>
@@ -57,20 +57,20 @@
 <script>
 export default {
   methods: {
-    logoout() {
-      this.$confirm('你确定要退出吗', '温馨提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          localStorage.removeItem('token')
-          this.$router.push('/login')
-          this.$message.success('退出成功')
+    async logout() {
+      try {
+        await this.$confirm('你确定要退出吗', '温馨提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
-        .catch(() => {
-          this.$message.info('取消退出')
-        })
+
+        localStorage.removeItem('token')
+        this.$router.push('/login')
+        this.$message.success('退出成功')
+      } catch (e) {
+        this.$message.info('取消退出')
+      }
     }
   }
 }

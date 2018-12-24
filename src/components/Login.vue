@@ -6,7 +6,7 @@
         <el-input v-model="form.username"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input type="password" v-model="form.password"></el-input>
+        <el-input type="password" v-model="form.password" @keyup.enter.native="login"></el-input>
       </el-form-item>
 
       <el-form-item>
@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   data() {
     return {
@@ -48,27 +47,27 @@ export default {
       this.$refs.form.resetFields()
     },
     login() {
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          axios({
-            method: 'post',
-            url: 'http://localhost:8888/api/private/v1/login',
-            data: this.form
-          }).then(res => {
-            if (res.data.meta.status === 200) {
-              this.$message.success('登录成功')
-              localStorage.setItem('token', res.data.data.token)
-              this.$router.push('/home')
-            } else {
-              this.$message({
-                message: res.data.meta.msg,
-                type: 'error',
-                duration: 1000
-              })
-            }
-          })
+      this.$refs.form.validate(async valid => {
+        if (!valid) return false
+        let res = await this.axios({
+          method: 'post',
+          url: 'login',
+          data: this.form
+        })
+        let {
+          meta: { status, msg },
+          data: { token }
+        } = res
+        if (status === 200) {
+          this.$message.success('登录成功')
+          localStorage.setItem('token', token)
+          this.$router.push('/home')
         } else {
-          return false
+          this.$message({
+            message: msg,
+            type: 'error',
+            duration: 1000
+          })
         }
       })
     }
